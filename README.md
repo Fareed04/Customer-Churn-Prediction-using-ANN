@@ -1,132 +1,132 @@
-# 📉 Customer Churn Prediction using ANN — Case Study
+# 📉 Customer Churn Prediction — Applied Machine Learning Case Study
 
 ## 1️⃣ Business Problem
 
-Retail banks lose significant revenue when customers churn, often without clear early warning signals. The objective of this project is to **predict whether a customer is likely to exit the bank** using historical customer data, enabling data-driven retention strategies.
+Customer churn represents a major source of revenue loss for retail banks. Many customers disengage gradually, making churn difficult to detect without data-driven signals.
 
-**Key Question**: *Can we identify high-risk customers before churn occurs using behavioral and demographic data?*
-**Target Variable**: `Exited` (1 = Churn, 0 = Retained)
+The objective of this project is to **predict the likelihood of customer churn** using historical customer data, enabling earlier intervention and more targeted retention strategies.
+
+**Target Variable**: `Exited`  
+(1 = Customer churned, 0 = Customer retained)
 
 ---
 
 ## 2️⃣ Dataset & Context
 
-The dataset (`Churn_Modelling.csv`) contains **10,000 customer records** from a retail bank, covering demographic attributes, account behavior, and engagement indicators.
+The dataset (`Churn_Modelling.csv`) contains **10,000 customer records** from a retail banking environment, combining demographic attributes with account and engagement behavior.
 
-**Core Features**:
+**Key Features Include**:
+- Credit score  
+- Geography (France, Germany, Spain)  
+- Gender  
+- Age and tenure  
+- Account balance and estimated salary  
+- Product usage and activity status  
 
-* CreditScore
-* Geography (France, Germany, Spain)
-* Gender
-* Age, Tenure
-* Balance, EstimatedSalary
-* Product usage and activity status
-
-This dataset reflects a **realistic, imbalanced churn scenario** commonly seen in financial services.
+The dataset reflects a **realistic churn scenario** with mild class imbalance, typical of financial services use cases.
 
 ---
 
 ## 3️⃣ Data Preparation & Feature Engineering
 
-To ensure model reliability and deployment consistency, the following preprocessing pipeline was applied:
+To ensure consistency between training and deployment, a structured preprocessing pipeline was applied:
 
-* Dropped non-informative identifiers (`RowNumber`, `CustomerId`, `Surname`)
-* **Label Encoding** for Gender
-* **One-Hot Encoding** for Geography
-* **Standard Scaling** for numerical features
-* 70/30 Train–Test split
+- Removed non-informative identifiers (`RowNumber`, `CustomerId`, `Surname`)
+- Label encoding for binary categorical variables (Gender)
+- One-hot encoding for multi-class categorical variables (Geography)
+- Standard scaling of numerical features
+- 70/30 train–test split
 
-All transformers (encoders and scaler) were persisted using Pickle and reused during inference in the Streamlit app.
+All preprocessing artifacts (encoders and scaler) were serialized and reused during inference to avoid training–serving skew.
 
 ---
 
 ## 4️⃣ Modeling Approach
 
-An **Artificial Neural Network (ANN)** was selected to capture non-linear relationships between customer attributes and churn behavior.
+An **Artificial Neural Network (ANN)** was used to capture non-linear relationships between customer attributes and churn behavior after preprocessing.
 
 ### Model Architecture
+- Input layer: 12 standardized features  
+- Hidden layer 1: 64 neurons (ReLU)  
+- Hidden layer 2: 32 neurons (ReLU)  
+- Output layer: 1 neuron (Sigmoid)  
 
-* Input Layer: 12 standardized features
-* Hidden Layer 1: 64 neurons (ReLU)
-* Hidden Layer 2: 32 neurons (ReLU)
-* Output Layer: 1 neuron (Sigmoid)
+**Optimizer**: Adam  
+**Loss Function**: Binary Crossentropy  
+**Evaluation Metric**: Accuracy  
 
-**Optimizer**: Adam (learning rate = 0.01)
-**Loss Function**: Binary Crossentropy
-**Metric**: Accuracy
-
-Early Stopping and TensorBoard monitoring were used to prevent overfitting and track convergence.
-
----
-
-## 5️⃣ Model Performance & Insights
-
-* **Validation Accuracy**: ~86–87%
-* The model converged quickly with stable validation loss
-* Customers with higher churn likelihood often showed:
-
-  * Lower engagement (`IsActiveMember = 0`)
-  * Fewer products
-  * Higher balances without corresponding activity
-
-While accuracy is strong, this model is best positioned as a **risk-ranking tool**, not a final decision-maker.
+Early stopping and TensorBoard monitoring were applied to improve generalization and track training behavior.
 
 ---
 
-## 6️⃣ Business Impact
+## 5️⃣ Model Performance & Observations
 
-This solution enables the business to:
+- Validation accuracy stabilized around **86–87%**
+- Training and validation loss converged smoothly
+- Higher churn risk was commonly associated with:
+  - Low customer activity (`IsActiveMember = 0`)
+  - Fewer products held
+  - High balances without corresponding engagement  
 
-* Proactively flag high-risk customers
-* Prioritize retention campaigns more effectively
-* Reduce churn-related revenue loss
-* Support decision-making with probability-based outputs
+The model is best suited as a **risk-ranking tool**, rather than a standalone decision system.
 
-The output is a **churn probability**, allowing flexible threshold selection depending on business risk tolerance.
+---
+
+## 6️⃣ Business Value
+
+This solution supports business decision-making by:
+
+- Identifying high-risk customers earlier
+- Enabling more targeted retention efforts
+- Supporting probability-based prioritization instead of binary rules
+- Reducing churn-related revenue leakage
+
+Predictions are expressed as **churn probabilities**, allowing flexible thresholds based on business risk tolerance.
 
 ---
 
 ## 7️⃣ Deployment: Streamlit Application
 
-A lightweight **Streamlit web application** was built to operationalize the model.
+A lightweight **Streamlit application** was developed to make the model usable outside a notebook environment.
 
-### App Capabilities
+### Application Features
+- Simple customer data input interface
+- Automated preprocessing (encoding + scaling)
+- Real-time churn probability prediction
+- Clear churn vs non-churn output
 
-* User-friendly customer data input
-* Automated encoding and scaling
-* Real-time churn probability prediction
-* Clear churn vs non-churn classification
-
-This bridges the gap between experimentation and real-world usability.
+This demonstrates the transition from model development to a usable analytical tool.
 
 ---
 
 ## 8️⃣ Project Structure
 
 ```
+
 Customer-Churn-Prediction-using-ANN/
 │
 ├── Churn_Modelling.csv             # Raw dataset
 ├── LICENSE                         # Project license
 ├── README.md                       # Project documentation
-├── app.py                          # Streamlit application for inference
-├── experiments.ipynb               # Data preprocessing & ANN training workflow
-├── prediction.ipynb                # Standalone notebook for churn prediction testing
+├── app.py                          # Streamlit inference application
+├── experiments.ipynb               # Data preprocessing and ANN training workflow
+├── prediction.ipynb                # Inference testing notebook
 ├── model.h5                        # Trained ANN model
 ├── scaler.pkl                      # StandardScaler used during training
-├── label_encoder_gender.pkl        # Gender LabelEncoder
-├── one_hot_encoder_geography.pkl   # Geography OneHotEncoder
+├── label_encoder_gender.pkl        # Gender label encoder
+├── one_hot_encoder_geography.pkl   # Geography one-hot encoder
 ├── requirements.txt                # Project dependencies
-```
+
+````
 
 ---
 
-## 9️⃣ How to Run
+## 9️⃣ How to Run Locally
 
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
-```
+````
 
 ---
 
@@ -143,29 +143,31 @@ streamlit run app.py
 
 ## 11️⃣ Key Takeaways
 
-* ANN models can effectively capture churn behavior patterns
-* Deployment-ready ML requires consistent preprocessing pipelines
-* Probability-based predictions are more actionable than binary labels
+* Neural networks can effectively model churn-related behavior patterns
+* Consistent preprocessing is critical for deployment-ready ML systems
+* Probability-based outputs are more actionable than hard classifications
 
 ---
 
-## 12️⃣ Future Improvements
+## 12️⃣ Potential Improvements
 
-* Address class imbalance using class weights or SMOTE
-* Hyperparameter tuning (Keras Tuner)
+* Address class imbalance using class weights or resampling
+* Hyperparameter tuning (e.g., Keras Tuner)
 * Model explainability with SHAP or LIME
-* Replace legacy `.h5` model with native `.keras` format
-* Cloud deployment (Streamlit Cloud / Render)
+* Migration to native `.keras` model format
+* Cloud deployment (Streamlit Cloud, Render)
 
 ---
 
 ## 👤 Author
 
 **Fareed**
-Data Analyst • Applied Data Scientist • Python Developer
+Data Analyst | Python Developer
 
 ---
 
 ## 📜 License
 
-Educational and portfolio use only.
+For educational and portfolio demonstration purposes.
+Tell me which project repo is next.
+```
